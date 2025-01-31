@@ -45,10 +45,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Users Management
         Route::resource('users', UserController::class);
         Route::get('/users/data', [UserController::class, 'getData'])->name('users.data');
-        Route::post('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggle-status');
+        Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
 
         // Admin Management Routes
         Route::resource('admins', AdminController::class);
-        Route::post('admins/{admin}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admins.toggle-status');
+        Route::get('/admins/data', [AdminController::class, 'getData'])->name('admins.data');
+        Route::patch('admins/{admin}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admins.toggle-status');
     });
 });

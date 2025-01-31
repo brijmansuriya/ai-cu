@@ -2,6 +2,13 @@
 
 @section('title', 'Users Management')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('/assets/admin/css/dataTables.bootstrap5.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/admin/css/jquery.dataTables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/admin/css/custom-datatable.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/admin/css/datatable-loader.css') }}">
+@endpush
+
 @section('content')
 <div class="flex flex-col">
     <div class="flex justify-between items-center mb-6">
@@ -17,18 +24,18 @@
             Add New User
         </a>
     </div>
-    <div class="container">
-        <div class="card">
-            <div class="card-header">Manage Users</div>
-            <div class="card-body">
-                {{ $dataTable->table(['id' => 'users-table'], true) }}
-            </div>
+
+    <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="overflow-x-auto">
+            {{ $dataTable->table() }}
         </div>
     </div>
-        
 </div>
 @endsection
 
 @push('scripts')
-        {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 @endpush

@@ -17,5 +17,4 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('Swal Loaded:', !!window.Swal);
     console.log('Alpine Loaded:', !!window.Alpine);
 });
-
 Alpine.start();

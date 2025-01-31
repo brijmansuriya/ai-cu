@@ -8,14 +8,16 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/admin/status-toggle.js',
-                'resources/js/admin/delete-record.js'
+                'resources/js/admin/delete-record.js',
+                'public/assets/admin/css/dataTables.bootstrap5.min.css',
+                'public/assets/admin/css/jquery.dataTables.min.css'
             ],
             refresh: true,
         }),
     ],
     resolve: {
         alias: {
-            '$': 'jQuery'
+            '$': 'jQuery',
         },
     }
 });

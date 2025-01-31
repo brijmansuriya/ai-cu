@@ -6,8 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title') - Admin Dashboard</title>
     
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+    <!-- Styles -->
+    @vite(['resources/css/app.css'])
     @stack('styles')
 </head>
 <body class="bg-gray-50 antialiased" 
@@ -218,7 +218,13 @@
         </footer>
     </div>
 
-    <!-- Scripts -->
+    
+    <!-- Core Scripts -->
+    {{-- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script> --}}
+    @vite(['resources/js/app.js'])
+    
+    <!-- Additional Scripts -->
     @stack('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.0.0/flowbite.min.js"></script>
 </body>
 </html> 

@@ -3,14 +3,12 @@
 namespace App\DataTables;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder as QueryBuilder;
-use Yajra\DataTables\EloquentDataTable;
-use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
-use Yajra\DataTables\Html\Editor\Editor;
-use Yajra\DataTables\Html\Editor\Fields;
+use Yajra\DataTables\EloquentDataTable;
+use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Services\DataTable;
+use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 
 class UsersDataTable extends DataTable
 {
@@ -21,26 +19,20 @@ class UsersDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
-            ->addColumn('action', function ($user) {
-                // return view('admin.users.actions', compact('user'));
-                //render action file 
-                return view('admin.users.actions', compact('user'));
+        return datatables()
+            ->eloquent($query)
+            ->addColumn('action', function($row) {
+                return view('admin.users.actions', compact('row'))->render();
             })
-            ->addColumn('status', function ($user) {
-                return '<span class="status-badge ' . ($user->status ? 'active' : 'inactive') . '">' . ($user->status ? 'Active' : 'Inactive') . '</span>';
+            ->editColumn('status', function ($row) {
+                return '<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' . 
+                    ($row->status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') . '">' . 
+                    ($row->status ? 'Active' : 'Inactive') . '</span>';
             })
-            ->addColumn('created_at', function ($user) {
-                return $user->created_at->diffForHumans();
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->format('Y-m-d');
             })
-
-            ->setRowId('id') 
-            
-            ->rawColumns(['status',  'action']);
-
-            //edit colume 
-            
-            
+            ->rawColumns(['action', 'status']);
     }
 
     /**
@@ -57,37 +49,53 @@ class UsersDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('users-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')       
-                    ->orderBy(1)
-                    // ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('users-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->dom('Blfrtip')
+            ->orderBy(1)
+            ->parameters([
+                'processing' => true,
+                'serverSide' => true,
+                'responsive' => true,
+                'stateSave' => true,
+                'scrollX' => false,
+                'autoWidth' => false,
+                'language' => [
+                    'url' => '//cdn.datatables.net/plug-ins/1.13.7/i18n/en-GB.json',
+                ],
+                'initComplete' => "function() {
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var input = document.createElement('input');
+                        $(input).appendTo($(column.footer()).empty())
+                        .on('change', function () {
+                            column.search($(this).val(), false, false, true).draw();
+                        });
+                    });
+                }",
+            ])
+            ->buttons([
+                Button::make('reload')
+            ]);
     }
 
     /**
      * Get the dataTable columns definition.
      */
-    public function getColumns(): array
+    protected function getColumns(): array
     {
         return [
-            Column::make('id'),
-            Column::make('name'),
-            Column::make('email'),
-            Column::make('status'),
-            Column::make('created_at')->title('Joined'),
+            Column::make('id')->width(60),
+            Column::make('name')->width(200),
+            Column::make('email')->width(250),
+            Column::make('status')->width(100),
+            Column::make('created_at')->width(120),
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->addClass('text-center'),
+                ->exportable(false)
+                ->printable(false)
+                ->width(100)
+                ->addClass('text-center'),
         ];
     }
 

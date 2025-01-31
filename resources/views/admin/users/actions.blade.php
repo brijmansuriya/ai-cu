@@ -1,10 +1,10 @@
 @php
-    $editUrl = route('admin.users.edit', $user->id);
+    $editUrl = route('admin.users.edit', $row->id);
 @endphp
 
 <div class="flex items-center justify-center space-x-2">
     {{-- Edit Button --}}
-    <a href="{{ route('admin.users.edit', $user->id) }}" 
+    <a href="{{ $editUrl }}" 
        class="inline-flex items-center px-3 py-2 rounded-lg text-yellow-700 bg-yellow-100 hover:bg-yellow-200 transition-colors duration-150 relative group">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -15,23 +15,23 @@
 
     {{-- Toggle Status Button --}}
     <button type="button"
-            onclick="toggleStatus({{ $user->id }}, {{ $user->status ? 'true' : 'false' }}, '/admin/users')" 
+            onclick="toggleStatus({{ $row->id }}, {{ $row->status ? 'true' : 'false' }}, '/admin/users')" 
             class="inline-flex items-center px-3 py-2 rounded-lg transition-colors duration-150
-                   {{ $user->status 
+                   {{ $row->status 
                       ? 'text-red-700 bg-red-100 hover:bg-red-200' 
                       : 'text-green-700 bg-green-100 hover:bg-green-200' }}">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="{{ $user->status 
+                  d="{{ $row->status 
                       ? 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' 
                       : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }}" />
         </svg>
-        <span class="text-sm font-medium">{{ $user->status ? 'Deactivate' : 'Activate' }}</span>
+        <span class="text-sm font-medium">{{ $row->status ? 'Deactivate' : 'Activate' }}</span>
     </button>
 
     {{-- Delete Button --}}
     <button type="button"
-            onclick="deleteRecord({{ $user->id }}, '/admin/users', 'Are you sure you want to delete this user?')" 
+            onclick="deleteRecord({{ $row->id }}, '/admin/users', 'Are you sure you want to delete this user?')" 
             class="inline-flex items-center px-3 py-2 rounded-lg text-red-700 bg-red-100 hover:bg-red-200 transition-colors duration-150">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 

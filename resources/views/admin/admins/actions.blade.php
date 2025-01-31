@@ -1,5 +1,6 @@
 @php
-    $editUrl = route('admin.admins.edit', $admin->id);
+    $editUrl = route('admin.admins.edit', $row->id);
+    $isActive = $row->status;
 @endphp
 
 <div class="flex items-center justify-center space-x-2">
@@ -12,20 +13,20 @@
     </a>
 
     {{-- Toggle Status Button --}}
-    <button onclick="toggleStatus({{ $admin->id }})" 
+    <button onclick="toggleStatus({{ $row->id }}, {{ $isActive }})" 
             class="action-btn action-btn-status"
-            title="{{ $admin->status ? 'Deactivate' : 'Activate' }} Admin">
+            title="{{ $isActive ? 'Deactivate' : 'Activate' }} Admin">
         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="{{ $admin->status 
+                d="{{ $isActive 
                     ? 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' 
                     : 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }}" />
         </svg>
-        <span class="sr-only">{{ $admin->status ? 'Deactivate' : 'Activate' }}</span>
+        <span class="sr-only">{{ $isActive ? 'Deactivate' : 'Activate' }}</span>
     </button>
 
     {{-- Delete Button --}}
-    <button onclick="deleteAdmin({{ $admin->id }})" 
+    <button onclick="deleteAdmin({{ $row->id }})" 
             class="action-btn action-btn-delete"
             title="Delete Admin">
         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -37,10 +38,10 @@
 
 @push('scripts')
 <script>
-    function toggleStatus(adminId) {
+    function toggleStatus(adminId, isActive) {
         Swal.fire({
             title: 'Are you sure?',
-            text: `Do you want to ${$admin->status ? 'deactivate' : 'activate'} this admin?`,
+            text: `Do you want to ${isActive ? 'deactivate' : 'activate'} this admin?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -48,24 +49,20 @@
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.post(`/admin/admins/${adminId}/toggle-status`, {}, {
+                axios.patch(`/admin/admins/${adminId}/toggle-status`, {}, {
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
                 })
                 .then(response => {
-                    if (response.data.success) {
-                        Swal.fire('Success!', response.data.message, 'success');
-                        if (window.LaravelDataTables && window.LaravelDataTables['admins-table']) {
-                            window.LaravelDataTables['admins-table'].ajax.reload(null, false);
-                        }
-                    } else {
-                        Swal.fire('Error!', response.data.message || 'Something went wrong!', 'error');
+                    Swal.fire('Success!', response.data.message, 'success');
+                    if (window.LaravelDataTables && window.LaravelDataTables['admins-table']) {
+                        window.LaravelDataTables['admins-table'].ajax.reload(null, false);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    Swal.fire('Error!', 'Something went wrong!', 'error');
+                    Swal.fire('Error!', error.response?.data?.message || 'Something went wrong!', 'error');
                 });
             }
         });
@@ -88,21 +85,17 @@
                     }
                 })
                 .then(response => {
-                    if (response.data.success) {
-                        Swal.fire('Deleted!', response.data.message, 'success');
-                        if (window.LaravelDataTables && window.LaravelDataTables['admins-table']) {
-                            window.LaravelDataTables['admins-table'].ajax.reload(null, false);
-                        }
-                    } else {
-                        Swal.fire('Error!', response.data.message || 'Something went wrong!', 'error');
+                    Swal.fire('Deleted!', response.data.message, 'success');
+                    if (window.LaravelDataTables && window.LaravelDataTables['admins-table']) {
+                        window.LaravelDataTables['admins-table'].ajax.reload(null, false);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    Swal.fire('Error!', 'Something went wrong!', 'error');
+                    Swal.fire('Error!', error.response?.data?.message || 'Something went wrong!', 'error');
                 });
             }
         });
     }
 </script>
-@endpush 
+@endpush

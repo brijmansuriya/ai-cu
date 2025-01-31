@@ -14,10 +14,33 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
-} 
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'status' => 'boolean',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * Scope a query to only include active admins.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
+    /**
+     * Scope a query to only include inactive admins.
+     */
+    public function scopeInactive($query)
+    {
+        return $query->where('status', false);
+    }
+}
